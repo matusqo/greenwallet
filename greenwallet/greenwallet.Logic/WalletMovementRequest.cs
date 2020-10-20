@@ -2,8 +2,8 @@
 {
     public class WalletMovementRequest
     {
-        public string PlayerEmail { get; set; }
+        public string WalletExternalId { get; set; }
         public decimal Amount { get; set; }
-        public string ExternalId { get; set; }
+        public string MovementExternalId { get; set; }
     }
 }

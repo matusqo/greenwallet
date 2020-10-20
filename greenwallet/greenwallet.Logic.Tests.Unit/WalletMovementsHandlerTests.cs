@@ -16,6 +16,7 @@ namespace greenwallet.Logic.Tests.Unit
         private AutoMock _autoMock;
         private Mock<IWalletTransactionRepository> _walletTransactionRepoMock;
         private Mock<IWalletRepository> _walletRepositoryMock;
+        private Mock<IWalletHandler> _walletHandlerMock;
 
         [SetUp]
         public void Setup()
@@ -23,10 +24,10 @@ namespace greenwallet.Logic.Tests.Unit
             _autoMock = AutoMock.GetLoose();
             _walletTransactionRepoMock = _autoMock.Mock<IWalletTransactionRepository>();
             _walletRepositoryMock = _autoMock.Mock<IWalletRepository>();
+            _walletHandlerMock = _autoMock.Mock<IWalletHandler>();
             _walletRepositoryMock.Setup(repository => repository.Get(It.IsAny<string>())).ReturnsAsync(new Wallet
             {
-                PlayerEmail = "someone@example.org",
-                Balance = 100m
+                ExternalId = "someone@example.org"
             });
             _walletMovementsHandler = _autoMock.Create<WalletMovementsHandler>();
         }
@@ -39,30 +40,31 @@ namespace greenwallet.Logic.Tests.Unit
             _walletMovementsHandler = null;
         }
 
-        [Test]
-        public async Task DepositFunds_ChecksWalletExists()
-        {
-            // Arrange
-            WalletMovementRequest walletMovementRequest = CreateWalletMovementRequest();
+        //[Test]
+        //public async Task DepositFunds_ChecksWalletExists()
+        //{
+        //    // Arrange
+        //    WalletMovementRequest walletMovementRequest = CreateWalletMovementRequest();
 
-            // Act
-            await _walletMovementsHandler.DepositFunds(walletMovementRequest);
+        //    // Act
+        //    await _walletMovementsHandler.DepositFunds(walletMovementRequest);
             
-            // Assert
-            _walletRepositoryMock.Verify(repository => repository.Get(walletMovementRequest.PlayerEmail));
-        }
+        //    // Assert
+        //    _walletRepositoryMock.Verify(repository => repository.Get(walletMovementRequest.WalletExternalId));
+        //}
 
         [Test]
         public async Task DepositFunds_ChecksTransactionExists()
         {
             // Arrange
             WalletMovementRequest walletMovementRequest = CreateWalletMovementRequest();
+            _walletHandlerMock.Setup(handler => handler.GetWallet(It.IsAny<string>())).ReturnsAsync(new Wallet());
 
             // Act
             await _walletMovementsHandler.DepositFunds(walletMovementRequest);
             
             // Assert
-            _walletTransactionRepoMock.Verify(repository => repository.Get(walletMovementRequest.ExternalId));
+            _walletTransactionRepoMock.Verify(repository => repository.Get(walletMovementRequest.MovementExternalId));
         }
 
         [Test]
@@ -100,6 +102,7 @@ namespace greenwallet.Logic.Tests.Unit
         {
             // Arrange
             WalletMovementRequest walletMovementRequest = CreateWalletMovementRequest();
+            _walletHandlerMock.Setup(handler => handler.GetWallet(It.IsAny<string>())).ReturnsAsync(new Wallet());
 
             // Act
             TransactionStatus transactionStatus = await _walletMovementsHandler.DepositFunds(walletMovementRequest).ConfigureAwait(false);
@@ -199,30 +202,47 @@ namespace greenwallet.Logic.Tests.Unit
             _walletTransactionRepoMock.VerifyNoOtherCalls();
         }
 
-        [Test]
-        public async Task WithdrawFunds_ChecksWalletExists()
-        {
-            // Arrange
-            WalletMovementRequest walletMovementRequest = CreateWalletMovementRequest();
+        //[Test]
+        //public async Task WithdrawFunds_ChecksWalletExists()
+        //{
+        //    // Arrange
+        //    WalletMovementRequest walletMovementRequest = CreateWalletMovementRequest();
 
-            // Act
-            await _walletMovementsHandler.WithdrawFunds(walletMovementRequest);
+        //    // Act
+        //    await _walletMovementsHandler.WithdrawFunds(walletMovementRequest);
             
-            // Assert
-            _walletRepositoryMock.Verify(repository => repository.Get(walletMovementRequest.PlayerEmail));
-        }
+        //    // Assert
+        //    _walletRepositoryMock.Verify(repository => repository.Get(walletMovementRequest.WalletExternalId));
+        //}
 
         [Test]
         public async Task WithdrawFunds_ChecksTransactionExists()
         {
             // Arrange
             WalletMovementRequest walletMovementRequest = CreateWalletMovementRequest();
+            _walletHandlerMock.Setup(handler => handler.GetWallet(It.IsAny<string>())).ReturnsAsync(new Wallet());
 
             // Act
             await _walletMovementsHandler.WithdrawFunds(walletMovementRequest);
             
             // Assert
-            _walletTransactionRepoMock.Verify(repository => repository.Get(walletMovementRequest.ExternalId));
+            _walletTransactionRepoMock.Verify(repository => repository.Get(walletMovementRequest.MovementExternalId));
+        }
+
+        [Test]
+        public async Task WithdrawFunds_CallsRepoAddWithCorrectData()
+        {
+            // Arrange
+            WalletMovementRequest walletMovementRequest = CreateWalletMovementRequest();
+            _walletHandlerMock.Setup(handler => handler.GetWallet(It.IsAny<string>())).ReturnsAsync(new Wallet());
+
+            // Act
+            await _walletMovementsHandler.WithdrawFunds(walletMovementRequest).ConfigureAwait(false);
+
+            // Assert
+            _walletTransactionRepoMock.Verify(repository =>
+                repository.Add(It.Is((WalletTransaction transaction) =>
+                    transaction.Type == TransactionType.Stake && transaction.Amount == 10m && transaction.ExternalId == "1234")));
         }
 
         [Test]
@@ -255,44 +275,76 @@ namespace greenwallet.Logic.Tests.Unit
             _walletTransactionRepoMock.Verify(repository => repository.Add(It.IsAny<WalletTransaction>()), Times.Never);
         }
 
+        [Test]
+        public async Task WithdrawFunds_BalanceTooLow_ReturnsRejected_StoresRejected()
+        {
+            // Arrange
+            WalletMovementRequest walletMovementRequest = CreateWalletMovementRequest();
+            _walletHandlerMock.Setup(walletHandler => walletHandler.GetWalletBalance(It.IsAny<Guid>())).ReturnsAsync(5m);
+            _walletHandlerMock.Setup(handler => handler.GetWallet(It.IsAny<string>())).ReturnsAsync(new Wallet());
+
+            // Act
+            TransactionStatus transactionStatus = await _walletMovementsHandler.WithdrawFunds(walletMovementRequest).ConfigureAwait(false);
+
+            // Assert
+            Assert.That(transactionStatus == TransactionStatus.Rejected);
+            _walletTransactionRepoMock.Verify(repository => repository.Add(It.Is((WalletTransaction transaction) => transaction.Status == TransactionStatus.Rejected)));
+        }
+
+        [Test]
+        public async Task WithdrawFunds_SufficientBalance_ReturnsAccepted_StoresAccepted()
+        {
+            // Arrange
+            WalletMovementRequest walletMovementRequest = CreateWalletMovementRequest();
+            _walletHandlerMock.Setup(walletHandler => walletHandler.GetWalletBalance(It.IsAny<Guid>())).ReturnsAsync(10m);
+            _walletHandlerMock.Setup(handler => handler.GetWallet(It.IsAny<string>())).ReturnsAsync(new Wallet());
+
+            // Act
+            TransactionStatus transactionStatus = await _walletMovementsHandler.WithdrawFunds(walletMovementRequest).ConfigureAwait(false);
+
+            // Assert
+            Assert.That(transactionStatus == TransactionStatus.Accepted);
+            _walletTransactionRepoMock.Verify(repository => repository.Add(It.Is((WalletTransaction transaction) => transaction.Status == TransactionStatus.Accepted)));
+        }
+
         private static WalletMovementRequest CreateWalletMovementRequest() =>
             new WalletMovementRequest
             {
-                PlayerEmail = "someone@example.org",
+                WalletExternalId = "someone@example.org",
                 Amount = 10m,
-                ExternalId = "1234"
+                MovementExternalId = "1234"
             };
 
         private static WalletMovementRequest CreateWalletMovementRequest_MissingPlayerEmail() =>
             new WalletMovementRequest
             {
-                PlayerEmail = null,
+                WalletExternalId = null,
                 Amount = 10m,
-                ExternalId = "1234"
+                MovementExternalId = "1234"
             };
 
         private static WalletMovementRequest CreateWalletMovementRequest_MissingExternalId() =>
             new WalletMovementRequest
             {
-                PlayerEmail = "someone@example.org",
+                WalletExternalId = "someone@example.org",
                 Amount = 10m,
-                ExternalId = null
+                MovementExternalId = null
             };
 
         private static WalletMovementRequest CreateWalletMovementRequest_AmountZero() =>
             new WalletMovementRequest
             {
-                PlayerEmail = "someone@example.org",
+                WalletExternalId = "someone@example.org",
                 Amount = 0m,
-                ExternalId = "1234"
+                MovementExternalId = "1234"
             };
 
         private static WalletMovementRequest CreateWalletMovementRequest_AmountLtZero() =>
             new WalletMovementRequest
             {
-                PlayerEmail = "someone@example.org",
+                WalletExternalId = "someone@example.org",
                 Amount = -5m,
-                ExternalId = "1234"
+                MovementExternalId = "1234"
             };
     }
 }

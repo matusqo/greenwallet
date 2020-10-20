@@ -3,17 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "greenwallet.Model", "greenwallet.Model\greenwallet.Model.csproj", "{7F5E7D56-4D1F-4A22-8721-95E05935F4E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "greenwallet.Model", "greenwallet.Model\greenwallet.Model.csproj", "{7F5E7D56-4D1F-4A22-8721-95E05935F4E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "greenwallet.Persistence.Interfaces", "greenwallet.Persistence.Interfaces\greenwallet.Persistence.Interfaces.csproj", "{E91E79AB-637E-47BC-AF43-5A3FA04A4192}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "greenwallet.Persistence.Interfaces", "greenwallet.Persistence.Interfaces\greenwallet.Persistence.Interfaces.csproj", "{E91E79AB-637E-47BC-AF43-5A3FA04A4192}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "greenwallet.Logic", "greenwallet.Logic\greenwallet.Logic.csproj", "{650BD3E9-BEB3-4681-9411-70B283E340A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "greenwallet.Logic", "greenwallet.Logic\greenwallet.Logic.csproj", "{650BD3E9-BEB3-4681-9411-70B283E340A0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{810306DE-15F6-47EE-9E51-10125EE3B7C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "greenwallet.Logic.Tests.Unit", "greenwallet.Logic.Tests.Unit\greenwallet.Logic.Tests.Unit.csproj", "{A83E381E-FF0D-4776-AB79-4E82177ED590}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "greenwallet.Logic.Tests.Unit", "greenwallet.Logic.Tests.Unit\greenwallet.Logic.Tests.Unit.csproj", "{A83E381E-FF0D-4776-AB79-4E82177ED590}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "greenwallet.TestsCommon", "greenwallet.TestsCommon\greenwallet.TestsCommon.csproj", "{157445B1-7BD4-4C29-80ED-C8D5350119AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "greenwallet.TestsCommon", "greenwallet.TestsCommon\greenwallet.TestsCommon.csproj", "{157445B1-7BD4-4C29-80ED-C8D5350119AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "greenwallet.WebAPI", "greenwallet.WebAPI\greenwallet.WebAPI.csproj", "{B67F5EB2-8D70-4624-ACEE-10206B71AC37}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "greenwallet.Persistence.InMemory", "greenwallet.Persistence.InMemory\greenwallet.Persistence.InMemory.csproj", "{FCD27E85-7DCA-4047-B6C5-C82819EF6C27}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +45,14 @@ Global
 		{157445B1-7BD4-4C29-80ED-C8D5350119AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{157445B1-7BD4-4C29-80ED-C8D5350119AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{157445B1-7BD4-4C29-80ED-C8D5350119AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B67F5EB2-8D70-4624-ACEE-10206B71AC37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B67F5EB2-8D70-4624-ACEE-10206B71AC37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B67F5EB2-8D70-4624-ACEE-10206B71AC37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B67F5EB2-8D70-4624-ACEE-10206B71AC37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCD27E85-7DCA-4047-B6C5-C82819EF6C27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCD27E85-7DCA-4047-B6C5-C82819EF6C27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCD27E85-7DCA-4047-B6C5-C82819EF6C27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCD27E85-7DCA-4047-B6C5-C82819EF6C27}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

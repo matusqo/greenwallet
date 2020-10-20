@@ -8,6 +8,6 @@ namespace greenwallet.Persistence.Interfaces
     {
         Task Add(Wallet wallet);
         Task<Wallet> Get(Guid id);
-        Task<Wallet> Get(string email);
+        Task<Wallet> Get(string externalId);
     }
 }

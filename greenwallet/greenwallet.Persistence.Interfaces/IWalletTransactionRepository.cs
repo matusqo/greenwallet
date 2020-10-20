@@ -8,5 +8,6 @@ namespace greenwallet.Persistence.Interfaces
     {
         Task Add(WalletTransaction walletTransaction);
         Task<WalletTransaction> Get(string externalId);
+        Task<WalletTransaction> GetLast(Guid walletId);
     }
 }
