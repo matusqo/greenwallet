@@ -36,7 +36,7 @@ namespace greenwallet.Logic
 
             return await _concurrencyConflictsResilientPolicy.ExecuteAsync(async () =>
             {
-                WalletTransaction walletTransaction = await _walletTransactionRepository.Get(walletMovementRequest.MovementExternalId).ConfigureAwait(false);
+                WalletTransaction walletTransaction = await _walletTransactionRepository.Get(wallet.Id, walletMovementRequest.MovementExternalId).ConfigureAwait(false);
                 if (walletTransaction != null)
                     return walletTransaction.Status;
 
@@ -63,7 +63,7 @@ namespace greenwallet.Logic
 
             return await _concurrencyConflictsResilientPolicy.ExecuteAsync(async () => 
             {
-                WalletTransaction walletTransaction = await _walletTransactionRepository.Get(walletMovementRequest.MovementExternalId).ConfigureAwait(false);
+                WalletTransaction walletTransaction = await _walletTransactionRepository.Get(wallet.Id, walletMovementRequest.MovementExternalId).ConfigureAwait(false);
                 if (walletTransaction != null)
                     return walletTransaction.Status;
 
@@ -104,14 +104,6 @@ namespace greenwallet.Logic
                 throw new ArgumentException("missing external ID", nameof(walletMovementRequest.MovementExternalId));
             if (walletMovementRequest.Amount <= 0m)
                 throw new ArgumentException("amount is less than zero", nameof(walletMovementRequest.Amount));
-        }
-
-        private async Task<Wallet> GetWallet(string externalId)
-        {
-            Wallet wallet = await _walletRepository.Get(externalId).ConfigureAwait(false);
-            if (wallet == null)
-                throw new Exception("wallet does not exist");
-            return wallet;
         }
     }
 }

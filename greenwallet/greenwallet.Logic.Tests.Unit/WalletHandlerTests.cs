@@ -58,11 +58,5 @@ namespace greenwallet.Logic.Tests.Unit
             Assert.That(async () => await _walletHandler.RegisterNew(notExistingId).ConfigureAwait(false), Throws.Nothing);
             _walletRepositoryMock.Verify(repository => repository.Add(It.Is((Wallet wallet) => wallet.ExternalId == notExistingId)));
         }
-
-        //[Test]
-        //public void GetWalletBalanceTest()
-        //{
-        //    throw new NotImplementedException();
-        //}
     }
 }

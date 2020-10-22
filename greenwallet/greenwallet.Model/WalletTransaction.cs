@@ -10,6 +10,7 @@ namespace greenwallet.Model
         public decimal Amount { get; set; }
         public decimal Balance { get; set; }
         public TransactionStatus Status { get; set; }
+        public DateTime DateTime { get; set; }
         public Wallet Wallet { get; set; }
     }
 }

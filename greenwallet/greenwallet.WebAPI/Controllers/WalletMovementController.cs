@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using greenwallet.Logic;
 using greenwallet.Model;
@@ -21,20 +22,25 @@ namespace greenwallet.WebAPI.Controllers
         }
         
         [HttpPost("deposit")]
-        public async Task<ActionResult<TransactionStatus>> CreditFunds(string playerEmail, string operationId, decimal amount)
+        public async Task<ActionResult<string>> CreditFunds(string playerEmail, string operationId, decimal amount)
         {
             try
             {
-                return await _walletMovementsHandler.DepositFunds(new WalletMovementRequest
+                TransactionStatus transactionStatus = await _walletMovementsHandler.DepositFunds(new WalletMovementRequest
                 {
                     WalletExternalId = playerEmail,
                     MovementExternalId = operationId,
                     Amount = amount
-                });
+                }).ConfigureAwait(false);
+                return transactionStatus.ToString();
             }
-            catch (Exception e) when(e.Message.Contains("exist"))
+            catch (Exception e) when (e.Message.Contains("exists"))
             {
-                return NotFound();
+                return Problem(e.Message, null, (int)HttpStatusCode.Conflict);
+            }
+            catch (Exception e) when (e.Message.Contains("exist"))
+            {
+                return NotFound(e.Message);
             }
         }
     }

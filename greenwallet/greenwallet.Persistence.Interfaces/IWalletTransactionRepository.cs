@@ -7,7 +7,7 @@ namespace greenwallet.Persistence.Interfaces
     public interface IWalletTransactionRepository
     {
         Task Add(WalletTransaction walletTransaction);
-        Task<WalletTransaction> Get(string externalId);
+        Task<WalletTransaction> Get(Guid walletId, string externalId);
         Task<WalletTransaction> GetLast(Guid walletId);
     }
 }
